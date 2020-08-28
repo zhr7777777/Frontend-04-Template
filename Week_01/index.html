@@ -1,0 +1,189 @@
+<html>
+  <head>
+
+    <style>
+      #board {
+        display: flex;
+        flex-wrap: wrap;
+        border: solid 1px #333;
+        width: 120px;
+        height: 120px;
+      }
+
+      .cell {
+        width: 38px;
+        height: 38px;
+        border: solid 1px #999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    
+    </style>
+  </head>
+  <body>
+    <div id="board">
+
+    </div>
+    <script>
+      let pattern = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+      ]
+      // let winner
+      let finish = false
+
+      const checkRow = pattern => {
+        let win = true
+        for (let i = 0; i < 3; i++) {
+          win = true
+          for (let j = 0; j < 3; j++) {
+            if (pattern[i][j] === 0) {
+              win = false
+              break
+            }
+            if (j === 0) continue
+            if (pattern[i][j] !== pattern[i][0]) {
+              win = false
+              break
+            }
+          }
+          if(win) break
+          else continue
+        }
+        return win
+      }
+
+      const checkColumn = pattern => {
+        let win = true
+        for (let i = 0; i < 3; i++) {
+          win = true
+          for (let j = 0; j < 3; j++) {
+            if (pattern[j][i] === 0) {
+              win = false
+              break
+            }
+            if (j === 0) continue
+            if (pattern[j][i] !== pattern[0][i]) {
+              win = false
+              break
+            }
+          }
+          if (win) break
+          else continue
+        }
+        return win
+      }
+
+      const checkOpposite = pattern => {
+        let win = true
+        for (let i = 0; i < 3; i++) {
+          if (pattern[i][i] === 0) {
+            win = false
+            break
+          }
+          if (i === 0) continue
+          if (pattern[i][i] !== pattern[0][0]) {
+            win = false
+            break
+          }
+        }
+        return win
+      }
+
+      const checkReverseOpposite = pattern => {
+        let win = true
+        for (let i = 0; i < 3; i++) {
+          if (pattern[i][2 - i] === 0) {
+            win = false
+            break
+          }
+          if (i === 0) continue
+          if (pattern[i][2 - i] !== pattern[0][2]) {
+            win = false
+            break
+          }
+        }
+        return win
+      }
+
+      const checkWin = pattern => {
+        return checkRow(pattern) || checkColumn(pattern) || checkOpposite(pattern) || checkReverseOpposite(pattern)
+      }
+
+      const checkWillWin = (pattern, currentPattern) => {
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            if(pattern[i][j] !== 0) continue
+            let tempPattern = JSON.parse(JSON.stringify(pattern))
+            tempPattern[i][j] = currentPattern
+            if(checkWin(tempPattern)) return [i, j]
+          }
+        }
+        return null
+      }
+
+      const bestChoice = (pattern, currentPattern) => {
+        let point = checkWillWin(pattern, currentPattern)
+        if(point) return {
+          point,
+          result: 1
+        }
+        let result = -2
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            if(pattern[i][j] !== 0) continue
+            let tempPattern = JSON.parse(JSON.stringify(pattern))
+            tempPattern[i][j] = currentPattern
+            let r = bestChoice(tempPattern, -currentPattern).result
+            if(-r > result) {
+              result = -r
+              point = [i, j]
+            }
+          }
+        }
+        return {
+          point,
+          result: point ? result : 0
+        }
+      }
+
+      const board = document.getElementById('board')
+      let currentPattern = -1
+
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          const cell = document.createElement('div')
+          cell.className = 'cell'
+          cell.id = `${i}${j}`
+          cell.addEventListener('click', () => {
+            if(finish) return
+            if(pattern[i][j] !== 0) return
+            pattern[i][j] = currentPattern
+            cell.innerHTML = currentPattern === -1 ? '⭕' : '❌'
+            if (checkWin(pattern)) {
+              alert(`${currentPattern === -1 ? '⭕ win !' : '❌ win !'}`)
+              finish = true
+            }
+            currentPattern = -currentPattern
+            if(currentPattern === 1) {
+              console.log(bestChoice(pattern, -1))
+              let point = bestChoice(pattern, -1).point
+              // pattern[point[0]][point[1]] = currentPattern
+              if(point) {
+                document.getElementById(`${point[0]}${point[1]}`).click()
+              }
+            }
+            // if(checkWillWin(pattern, currentPattern)) {
+            //   console.log(`${currentPattern === -1 ? '⭕ will win !' : '❌ will win !'}`)
+            // }
+          })
+          board.appendChild(cell)
+        }
+      }
+
+
+    </script>
+  </body>
+</html>
