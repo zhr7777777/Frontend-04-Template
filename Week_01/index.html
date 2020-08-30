@@ -26,14 +26,21 @@
 
     </div>
     <script>
+      const board = document.getElementById('board')
+      // {
+      //   '-1': '⭕',
+      //   0: '未落子',
+      //   1: '❌'
+      // }
       let pattern = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0]
       ]
-      // let winner
-      let finish = false
+      let finish = false  // 游戏是否结束
+      let currentPattern = -1 // 当前落子，先手'⭕'
 
+      // 判断当前落子后，横行有没有可以赢
       const checkRow = pattern => {
         let win = true
         for (let i = 0; i < 3; i++) {
@@ -112,6 +119,7 @@
         return checkRow(pattern) || checkColumn(pattern) || checkOpposite(pattern) || checkReverseOpposite(pattern)
       }
 
+      // 对于当前棋盘空位虚拟落子，看是否有赢得位置
       const checkWillWin = (pattern, currentPattern) => {
         for (let i = 0; i < 3; i++) {
           for (let j = 0; j < 3; j++) {
@@ -149,9 +157,6 @@
         }
       }
 
-      const board = document.getElementById('board')
-      let currentPattern = -1
-
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           const cell = document.createElement('div')
@@ -167,7 +172,7 @@
               finish = true
             }
             currentPattern = -currentPattern
-            if(currentPattern === 1) {
+            if(currentPattern === 1) {  // 电脑走
               console.log(bestChoice(pattern, -1))
               let point = bestChoice(pattern, -1).point
               // pattern[point[0]][point[1]] = currentPattern
