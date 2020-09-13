@@ -1,0 +1,96 @@
+<style>
+  #dragable {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    display: inline-block;
+  }
+</style>
+
+<p id="container">
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+栗子 栗子 栗子 栗子 栗子 栗子 栗子 栗子
+</p>
+<div id="dragable">
+
+</div>
+
+<script>
+  let dragable = document.getElementById('dragable')
+
+  let baseX = 0
+  let baseY = 0
+
+  dragable.addEventListener('mousedown', (event) => {
+
+    let startX = event.clientX
+    let startY = event.clientY
+
+    let up = event => {
+      document.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseup', up)
+      baseX = baseX + event.clientX - startX
+      baseY = baseY + event.clientY - startY
+    }
+
+    let move = event => {
+      console.log(event)
+      let range = getNearest(event.clientX, event.clientY)
+      range.insertNode(dragable)
+      // dragable.style.transform = `translateX(${baseX + event.clientX - startX}px) translateY(${baseY + event.clientY - startY}px)`
+    }
+
+    document.addEventListener('mousemove', move)
+    document.addEventListener('mouseup', up)
+  })
+
+  let container = document.getElementById('container')
+  let ranges = []
+
+  for(let i=0; i<container.childNodes[0].length; i++) {
+    let range = document.createRange()
+    range.setStart(container.childNodes[0], i)
+    range.setEnd(container.childNodes[0], i)
+    console.log(range.getBoundingClientRect())
+    ranges.push(range)
+  }
+
+  function getNearest(x, y) {
+    let min = Infinity
+    let nearestRange = null
+
+    for(let range of ranges) {
+      let rect = range.getBoundingClientRect()
+      let distance = Math.pow((rect.x - x), 2) + Math.pow((rect.y - y), 2)
+      if(distance < min) {
+        nearestRange = range
+        min = distance
+      }
+    }
+    return nearestRange
+  }
+
+  document.addEventListener('selectstart', event => event.preventDefault())
+</script>

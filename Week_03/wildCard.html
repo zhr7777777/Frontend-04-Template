@@ -1,0 +1,35 @@
+<script>
+  // offer19
+  // leetcode 44
+  /**
+   * @param {string} s
+   * @param {string} p
+   * @return {boolean}
+   */
+  var isMatch = function (s, p) {
+    if (s.length === 0) {
+      return /^(.{1}\*)*$/.test(p)
+    }
+    if (p.length === 0) {
+      return false
+    }
+    c1 = s.charAt(0)
+    c2 = p.charAt(0)
+    c3 = p.length > 1 ? p.charAt(1) : 'a'
+    if (c3 !== '*') {
+      if (c1 === c2 || c2 === '.') {
+        return isMatch(s.slice(1), p.slice(1))
+      } else {
+        return false
+      }
+    } else {
+      if (c1 === c2 || c2 === '.') {
+        return isMatch(s.slice(1), p) || isMatch(s, p.slice(2))
+      } else {
+        return isMatch(s, p.slice(2))
+      }
+    }
+  };
+
+  console.log(isMatch('aa', 'a*'))
+</script>

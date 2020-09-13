@@ -1,0 +1,68 @@
+<input id='input' />
+<script>
+  let object = {
+    a: {
+      b: 1
+    },
+    b: 2
+  }
+
+  let callbacks = new Map()
+  let reactiveObjs = []
+  let reactiveProxies = new Map()
+
+  let proxy = reactive(object)
+
+  effect(() => {
+    // console.log(proxy.a.b)
+    document.getElementById('input').value = proxy.b
+  })
+
+  document.getElementById('input').addEventListener('input', event => proxy.b = event.target.value)
+  
+  function effect(callback) {
+    // callbacks.push(callback)
+    reactiveObjs = []
+    callback()
+    console.log(reactiveObjs)
+    for(let obj of reactiveObjs) {
+      if(!callbacks.has(obj[0])) {
+        callbacks.set(obj[0], new Map())
+      }
+      if(!callbacks.get(obj[0]).has(obj[1])) {
+        callbacks.get(obj[0]).set(obj[1], [])
+      }
+      callbacks.get(obj[0]).get(obj[1]).push(callback)
+    }
+  }
+
+  function reactive(obj) {
+    if(reactiveProxies.has(obj)) {
+      return reactiveProxies.get(obj)
+    }
+    let proxy = new Proxy(obj, {
+      set(obj, prop, val) {
+        console.log(obj, prop, val)
+        obj[prop] = val
+        if (callbacks.has(obj)) {
+          if (callbacks.get(obj).has(prop)) {
+            for(let callback of callbacks.get(obj).get(prop)) {
+              callback()
+            }
+          }
+        }
+        return obj[prop]
+      },
+      get(obj, prop) {
+        reactiveObjs.push([obj, prop])
+        if(typeof obj[prop] === 'object') {
+          return reactive(obj[prop])
+        }
+        return obj[prop]
+      }
+    })
+    reactiveProxies.set(obj, proxy)
+    return proxy
+  }
+
+</script>
