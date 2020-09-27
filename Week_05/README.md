@@ -8,6 +8,7 @@ week5:
 
 最高：
 member运算：
+```javascript
 a.b
 a[b]
 foo`string`
@@ -15,6 +16,7 @@ super.b
 super[‘b’]
 new.target
 new foo()
+```
 
 new 运算：
 new Foo
@@ -23,11 +25,13 @@ reference运算：
 对象的assgin和delete
 
 call expression：
+```javascript
 foo()
 super()
 foo()[’b’]
 foo().b
 foo()`abc`
+```
 
 左手表达式：
 a.b = c
@@ -54,6 +58,7 @@ await a
 ** (右结合运算符)
 
 4. 
+```javascript
 multiplicative
 * / %
 addtive
@@ -70,11 +75,14 @@ logical
 && ||
 conditional
 ? :
+```
 
 类型转换：
+```javascript
 false == ‘false’  // false
 Number(undefined) // NaN
 Number(null) // 0
+```
 
 toPremitive：
 装箱：
@@ -85,6 +93,7 @@ Symbol.toPrimitive
 规则：定义了Symbol.toPrimitive，优先。未定义Symbol.toPrimitive，表达式运算调用valueOf，作为属性key调用toString
 
 Eg: 
+```javascript
 let obj = {
 1: 1,
 2: 2,
@@ -97,6 +106,7 @@ valueOf: function () { return  },
 }
 console.log(o + 1)
 console.log(obj[o])
+```
 
 拆箱：
 基础类型包装类
